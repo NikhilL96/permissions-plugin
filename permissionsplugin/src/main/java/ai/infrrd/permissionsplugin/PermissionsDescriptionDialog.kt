@@ -16,7 +16,8 @@ import android.support.v7.widget.SimpleItemAnimator
 import ai.infrrd.permissionsplugin.R
 
 
-class PermissionsDescriptionDialog: AppCompatDialogFragment() {
+internal class PermissionsDescriptionDialog: AppCompatDialogFragment() {
+
 
     var positiveCallBack: () -> Unit = {}
     var negativeCallBack: () -> Unit = {}
@@ -34,7 +35,6 @@ class PermissionsDescriptionDialog: AppCompatDialogFragment() {
         viewManager = LinearLayoutManager(context)
         viewAdapter =
                 ExpandableRecycler(permissionDescription, context)
-
 
 
         packageManager = context?.packageManager

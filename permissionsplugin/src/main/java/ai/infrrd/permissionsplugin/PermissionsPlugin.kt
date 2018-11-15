@@ -17,8 +17,8 @@ import android.util.Log
 import android.widget.Toast
 
 
-class PermissionsPlugin(val activity: Activity, val context: Context, val permissionDescription: MutableList<PermissionDescription>,
-                        var permissionCallBacks: PermissionCallBacks?) {
+class PermissionsPlugin(private val activity: Activity,private val context: Context,private val permissionDescription: MutableList<PermissionDescription>,
+                        private var permissionCallBacks: PermissionCallBacks?) {
 
     private val PREFS_FILE_NAME = "First Time Permissions"
     private var permissions: Array<String> = Array(permissionDescription.size){""}
@@ -171,14 +171,14 @@ class PermissionsPlugin(val activity: Activity, val context: Context, val permis
 
     }
 
-    fun getPermissionString(permissionDescriptions: MutableList<PermissionDescription>): List<String> {
+    private fun getPermissionString(permissionDescriptions: MutableList<PermissionDescription>): List<String> {
         var permissions = mutableListOf<String>()
         for(permissionDescription in permissionDescriptions) {
             permissions.add(permissionDescription.permission)
         }
         return permissions
     }
-    fun validatePermissions(permissions:Array<String>):Boolean {
+    private fun validatePermissions(permissions:Array<String>):Boolean {
 
         var manifestPermissions:List<String> = context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS).requestedPermissions.toList()
         for(permission in permissions) {

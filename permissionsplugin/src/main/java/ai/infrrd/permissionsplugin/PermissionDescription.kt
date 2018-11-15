@@ -1,6 +1,6 @@
 package ai.infrrd.permissionsplugin
 
-class PermissionDescription(val permission:String,var description:String?) {
+class PermissionDescription(internal val permission:String,internal var description:String?) {
     constructor(permission: String) : this(permission,null)
     init {
         setDescription()

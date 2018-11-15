@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity(), PermissionCallBacks {
                 PermissionsPlugin(this, this, permissions, this)
         button.setOnClickListener {
             permissionsPlugin.checkPermissions()
+
         }
     }
 

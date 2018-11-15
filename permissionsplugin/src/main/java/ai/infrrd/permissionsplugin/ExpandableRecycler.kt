@@ -12,7 +12,7 @@ import android.widget.TextView
 import ai.infrrd.permissionsplugin.utils.getPermissionDrawable
 import ai.infrrd.permissionsplugin.utils.getPermissionGroup
 
-class ExpandableRecycler(private val permissions: List<PermissionDescription>, val context: Context?) :
+internal class ExpandableRecycler(private val permissions: List<PermissionDescription>, val context: Context?) :
 
     RecyclerView.Adapter<ExpandableRecycler.MyViewHolder>() {
     var isExpanded = Array<Boolean>(permissions.size){_ -> false}
