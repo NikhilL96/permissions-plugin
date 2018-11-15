@@ -17,28 +17,28 @@ import android.util.Log
 import android.widget.Toast
 
 
-class PermissionsPlugin(private val activity: Activity,private val context: Context,private val permissionDescription: MutableList<PermissionDescription>,
-                        private var permissionCallBacks: PermissionCallBacks?) {
+class PermissionsPlugin(private val activity: Activity,private val context: Context, private var permissionCallBacks: PermissionCallBacks?) {
 
     private val PREFS_FILE_NAME = "First Time Permissions"
-    private var permissions: Array<String> = Array(permissionDescription.size){""}
+    private lateinit var permissions: Array<String>
     private var permissionDisabled = false
     private var permissionDenied = false
     private var permissionsDisabled:MutableList<PermissionDescription> = mutableListOf()
     private var permissionsDenied:MutableList<PermissionDescription> = mutableListOf()
 
 
-    init{
+    private fun initializePermissionsArray(permissionDescription: MutableList<PermissionDescription>){
+        permissions = Array(permissionDescription.size){""}
         for((i, permission) in permissionDescription.withIndex()) {
             permissions[i] = permission.permission
         }
 
     }
     private fun groupPermissions(permissionDescription:List<PermissionDescription>):List<PermissionDescription> {
-        var permissionGroups:MutableList<PermissionDescription> = mutableListOf()
+        val permissionGroups:MutableList<PermissionDescription> = mutableListOf()
 
         for(permission in permissionDescription) {
-            var groupPresent:Boolean = false
+            var groupPresent = false
             for(group in permissionGroups) {
                 if(getPermissionGroup(context,permission.permission) == getPermissionGroup(context,group.permission)) {
                     group.description = group.description+ "\n" + permission.description
@@ -59,7 +59,7 @@ class PermissionsPlugin(private val activity: Activity,private val context: Cont
 
     private fun firstTimeAskingPermission(permission: String) {
 
-        var sharedPreference = context.getSharedPreferences(PREFS_FILE_NAME, AppCompatActivity.MODE_PRIVATE)
+        val sharedPreference = context.getSharedPreferences(PREFS_FILE_NAME, AppCompatActivity.MODE_PRIVATE)
         if (!sharedPreference.contains(permission)) {
             sharedPreference.edit().putBoolean(permission, true).apply()
         }
@@ -107,7 +107,8 @@ class PermissionsPlugin(private val activity: Activity,private val context: Cont
     }
 
 
-    fun checkPermissions() {
+    fun checkPermissions(permissionDescription: MutableList<PermissionDescription>) {
+        initializePermissionsArray(permissionDescription)
         permissionDisabled = false
         permissionDenied =false
         permissionsDenied.clear()
@@ -116,15 +117,10 @@ class PermissionsPlugin(private val activity: Activity,private val context: Cont
         if(validatePermissions(permissions)) {
 
             for ((i,permission) in permissions.withIndex()) {
-                if (ContextCompat.checkSelfPermission(
-                        context,
-                        permission
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
+                if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
                     removePreference(permission)
                 } else if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)
-                    && !isFirstTimeAskingPermission(permission)
-                ) {
+                    && !isFirstTimeAskingPermission(permission)) {
                     permissionsDisabled.add(permissionDescription[i])
                     permissionDisabled = true
                 } else {
@@ -174,7 +170,7 @@ class PermissionsPlugin(private val activity: Activity,private val context: Cont
     }
 
     private fun getPermissionString(permissionDescriptions: MutableList<PermissionDescription>): List<String> {
-        var permissions = mutableListOf<String>()
+        val permissions = mutableListOf<String>()
         for(permissionDescription in permissionDescriptions) {
             permissions.add(permissionDescription.permission)
         }
@@ -182,7 +178,7 @@ class PermissionsPlugin(private val activity: Activity,private val context: Cont
     }
     private fun validatePermissions(permissions:Array<String>):Boolean {
 
-        var manifestPermissions:List<String> = context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS).requestedPermissions.toList()
+        val manifestPermissions:List<String> = context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS).requestedPermissions.toList()
         for(permission in permissions) {
             if(!manifestPermissions.contains(permission)) {
                 return false
