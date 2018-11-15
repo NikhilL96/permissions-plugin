@@ -100,6 +100,9 @@ class PermissionsPlugin(private val activity: Activity,private val context: Cont
 
 
     private fun getPermission() {
+        for(permission in permissions) {
+            firstTimeAskingPermission(permission)
+        }
         ActivityCompat.requestPermissions(activity, permissions, 1)
     }
 
@@ -113,7 +116,6 @@ class PermissionsPlugin(private val activity: Activity,private val context: Cont
         if(validatePermissions(permissions)) {
 
             for ((i,permission) in permissions.withIndex()) {
-                firstTimeAskingPermission(permission)
                 if (ContextCompat.checkSelfPermission(
                         context,
                         permission
@@ -156,7 +158,7 @@ class PermissionsPlugin(private val activity: Activity,private val context: Cont
                     startActivity(context, intent, null)
                 }
                 warningDialog.negativeCallBack = {
-                    permissionCallBacks?.onPermissionDenied(getPermissionString(permissionDescription))
+                    permissionCallBacks?.onPermissionDisabled(getPermissionString(permissionDescription))
 
                 }
                 warningDialog.permissionDescription = groupPermissions(permissionsDisabled)
