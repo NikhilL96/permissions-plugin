@@ -2,9 +2,6 @@ package ai.infrrd.permissionsplugin
 
 import android.animation.ObjectAnimator
 import android.content.Context
-import android.graphics.Color
-import android.graphics.PorterDuff
-import android.graphics.drawable.Drawable
 import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -12,7 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import ai.infrrd.permissionsplugin.R
+import ai.infrrd.permissionsplugin.utils.getPermissionDrawable
+import ai.infrrd.permissionsplugin.utils.getPermissionGroup
 
 class ExpandableRecycler(private val permissions: List<PermissionDescription>, val context: Context?) :
 
@@ -35,18 +33,13 @@ class ExpandableRecycler(private val permissions: List<PermissionDescription>, v
             duration = 200
         }
 
-        holder.linearLayout.findViewById<TextView>(R.id.permission_title).text = getPermissionGroup(permissions[position].permission)
-        if(permissions[position].description==null) {
-            holder.linearLayout.findViewById<TextView>(R.id.permission_description).text = getDescription(permissions[position].permission)
-        }
-        else {
-            holder.linearLayout.findViewById<TextView>(R.id.permission_description).text = permissions[position].description
 
-        }
+        holder.linearLayout.findViewById<TextView>(R.id.permission_title).text = getPermissionGroup(context,permissions[position].permission)
+        holder.linearLayout.findViewById<TextView>(R.id.permission_description).text = permissions[position].description
 
         holder.linearLayout.findViewById<TextView>(R.id.permission_description).visibility = if(isExpanded[position])  View.VISIBLE else View.GONE
 
-        holder.linearLayout.findViewById<ImageView>(R.id.permission_icon).setImageDrawable(getPermissionDrawable(permissions[position].permission))
+        holder.linearLayout.findViewById<ImageView>(R.id.permission_icon).setImageDrawable(getPermissionDrawable(context,permissions[position].permission))
         holder.linearLayout.findViewById<ImageView>(R.id.arrow).setOnClickListener {
             if(isExpanded[position]) {
                 animatorArrow.reverse()
@@ -61,32 +54,4 @@ class ExpandableRecycler(private val permissions: List<PermissionDescription>, v
 
     override fun getItemCount() = permissions.size
 
-    fun getDescription(permission: String):String {
-
-        var description:String = "Enable permission to "
-
-        description += permission.subSequence(permission.indexOfLast { it == '.' }+1,permission.lastIndex+1).toString().
-            replace('_',' ').
-            toLowerCase().capitalize()
-        return description
-    }
-
-
-
-    private fun getPermissionDrawable(permission: String): Drawable? {
-        var drawable: Drawable?
-        val permissionInfo = context?.packageManager?.getPermissionInfo(permission, 0)
-        val groupInfo = context?.packageManager?.getPermissionGroupInfo(permissionInfo?.group, 0)
-        drawable = context?.packageManager?.getResourcesForApplication("android")?.getDrawable(groupInfo?.icon as Int,null)
-        if (context!=null) {
-            drawable?.setColorFilter(Color.DKGRAY,PorterDuff.Mode.SRC_ATOP)
-        }
-        return drawable
-    }
-
-    private fun getPermissionGroup(permission: String):String {
-        val permissionInfo = context?.packageManager?.getPermissionInfo(permission, 0)
-        val permissionGroupInfo = context?.packageManager?.getPermissionGroupInfo(permissionInfo?.group, 0)
-        return permissionGroupInfo?.loadLabel(context?.packageManager).toString()
-    }
 }

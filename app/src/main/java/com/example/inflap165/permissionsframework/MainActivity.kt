@@ -24,11 +24,13 @@ class MainActivity : AppCompatActivity(), PermissionCallBacks {
         setContentView(R.layout.activity_main)
         permissions.add(
             PermissionDescription(
-                Manifest.permission.CAMERA,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
                 "Camera permission"
             )
         )
         permissions.add(PermissionDescription(Manifest.permission.WRITE_EXTERNAL_STORAGE))
+        permissions.add(PermissionDescription(Manifest.permission.CAMERA,"blah blah"))
+
         permissionsPlugin =
                 PermissionsPlugin(this, this, permissions, this)
         button.setOnClickListener {

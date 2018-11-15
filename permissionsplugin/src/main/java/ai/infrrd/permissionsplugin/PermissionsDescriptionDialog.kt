@@ -20,7 +20,7 @@ class PermissionsDescriptionDialog: AppCompatDialogFragment() {
 
     var positiveCallBack: () -> Unit = {}
     var negativeCallBack: () -> Unit = {}
-    lateinit var permissionDescription: MutableList<PermissionDescription>
+    lateinit var permissionDescription: List<PermissionDescription>
     lateinit var titleString:String
     var packageManager: PackageManager? = null
     private lateinit var recyclerView: RecyclerView

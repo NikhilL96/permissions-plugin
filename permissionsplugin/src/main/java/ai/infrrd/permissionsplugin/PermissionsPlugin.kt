@@ -1,5 +1,7 @@
 package ai.infrrd.permissionsplugin
 
+import ai.infrrd.permissionsplugin.utils.getApplicationName
+import ai.infrrd.permissionsplugin.utils.getPermissionGroup
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -11,6 +13,7 @@ import android.support.v4.app.FragmentActivity
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.widget.Toast
 
 
@@ -29,7 +32,27 @@ class PermissionsPlugin(val activity: Activity, val context: Context, val permis
         for((i, permission) in permissionDescription.withIndex()) {
             permissions[i] = permission.permission
         }
+
     }
+    private fun groupPermissions(permissionDescription:List<PermissionDescription>):List<PermissionDescription> {
+        var permissionGroups:MutableList<PermissionDescription> = mutableListOf()
+
+        for(permission in permissionDescription) {
+            var groupPresent:Boolean = false
+            for(group in permissionGroups) {
+                if(getPermissionGroup(context,permission.permission) == getPermissionGroup(context,group.permission)) {
+                    group.description = group.description+ "\n" + permission.description
+                    groupPresent = true
+                    break
+                }
+            }
+            if(!groupPresent) {
+                permissionGroups.add(permission)
+            }
+        }
+        return permissionGroups
+    }
+
 
     private var descriptionDialog = PermissionsDescriptionDialog()
     private var warningDialog = PermissionsDescriptionDialog()
@@ -87,23 +110,23 @@ class PermissionsPlugin(val activity: Activity, val context: Context, val permis
         permissionsDenied.clear()
         permissionsDisabled.clear()
 
-        if(validatePermissions(getPermissionString(permissionDescription))) {
+        if(validatePermissions(permissions)) {
 
-            for (permission in permissionDescription) {
-                firstTimeAskingPermission(permission.permission)
+            for ((i,permission) in permissions.withIndex()) {
+                firstTimeAskingPermission(permission)
                 if (ContextCompat.checkSelfPermission(
                         context,
-                        permission.permission
+                        permission
                     ) == PackageManager.PERMISSION_GRANTED
                 ) {
-                    removePreference(permission.permission)
-                } else if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, permission.permission)
-                    && !isFirstTimeAskingPermission(permission.permission)
+                    removePreference(permission)
+                } else if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)
+                    && !isFirstTimeAskingPermission(permission)
                 ) {
-                    permissionsDisabled.add(permission)
+                    permissionsDisabled.add(permissionDescription[i])
                     permissionDisabled = true
                 } else {
-                    permissionsDenied.add(permission)
+                    permissionsDenied.add(permissionDescription[i])
                     permissionDenied = true
                 }
             }
@@ -114,11 +137,12 @@ class PermissionsPlugin(val activity: Activity, val context: Context, val permis
                 }
 
                 descriptionDialog.negativeCallBack = {
+                    permissionCallBacks?.onPermissionDenied(getPermissionString(permissionDescription))
 
                 }
 
-                descriptionDialog.permissionDescription = permissionsDenied
-                descriptionDialog.titleString = getApplicationName() +" needs Access to:"
+                descriptionDialog.permissionDescription = groupPermissions(permissionsDenied)
+                descriptionDialog.titleString = getApplicationName(context) +" needs Access to:"
 
                 descriptionDialog.show((activity as FragmentActivity).supportFragmentManager, "permissions description")
             }
@@ -132,22 +156,19 @@ class PermissionsPlugin(val activity: Activity, val context: Context, val permis
                     startActivity(context, intent, null)
                 }
                 warningDialog.negativeCallBack = {
+                    permissionCallBacks?.onPermissionDenied(getPermissionString(permissionDescription))
 
                 }
-                warningDialog.permissionDescription = permissionsDisabled
-                warningDialog.titleString = getApplicationName()+ " needs the following permissions for the app to function properly:"
+                warningDialog.permissionDescription = groupPermissions(permissionsDisabled)
+                warningDialog.titleString = getApplicationName(context)+ " needs the following permissions for the app to function properly:"
                 warningDialog.show((activity as FragmentActivity).supportFragmentManager, "permissions description")
 
             }
         }
         else {
-            Toast.makeText(context," Invalid permissions",Toast.LENGTH_LONG).show()
+            Toast.makeText(context,"Invalid permissions",Toast.LENGTH_LONG).show()
         }
 
-    }
-
-    private fun getApplicationName():String {
-        return context?.packageManager?.getApplicationLabel(context?.packageManager?.getApplicationInfo(context.packageName,0)).toString()
     }
 
     fun getPermissionString(permissionDescriptions: MutableList<PermissionDescription>): List<String> {
@@ -157,7 +178,7 @@ class PermissionsPlugin(val activity: Activity, val context: Context, val permis
         }
         return permissions
     }
-    fun validatePermissions(permissions:List<String>):Boolean {
+    fun validatePermissions(permissions:Array<String>):Boolean {
 
         var manifestPermissions:List<String> = context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS).requestedPermissions.toList()
         for(permission in permissions) {
@@ -168,8 +189,6 @@ class PermissionsPlugin(val activity: Activity, val context: Context, val permis
         return true
     }
 }
-
-
 
 
 
