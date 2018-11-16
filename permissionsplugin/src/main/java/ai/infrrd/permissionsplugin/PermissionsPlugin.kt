@@ -1,6 +1,7 @@
 package ai.infrrd.permissionsplugin
 
 import ai.infrrd.permissionsplugin.utils.getApplicationName
+import ai.infrrd.permissionsplugin.utils.getPermissionDrawable
 import ai.infrrd.permissionsplugin.utils.getPermissionGroup
 import android.app.Activity
 import android.content.Context
@@ -34,20 +35,23 @@ class PermissionsPlugin(private val activity: Activity,private val context: Cont
         }
 
     }
-    private fun groupPermissions(permissionDescription:List<PermissionDescription>):List<PermissionDescription> {
-        val permissionGroups:MutableList<PermissionDescription> = mutableListOf()
+    private fun groupPermissions(permissionDescription:List<PermissionDescription>):List<PermissionGroup> {
+        val permissionGroups:MutableList<PermissionGroup> = mutableListOf()
 
         for(permission in permissionDescription) {
+
+            var newPermission:PermissionGroup? = permission.description?.let {PermissionGroup(getPermissionGroup(context,permission.permission),it,
+                getPermissionDrawable(context,permission.permission))  }
             var groupPresent = false
             for(group in permissionGroups) {
-                if(getPermissionGroup(context,permission.permission) == getPermissionGroup(context,group.permission)) {
+                if(getPermissionGroup(context,permission.permission) == group.group ){
                     group.description = group.description+ "\n" + permission.description
                     groupPresent = true
                     break
                 }
             }
             if(!groupPresent) {
-                permissionGroups.add(permission)
+                newPermission?.let { permissionGroups.add(newPermission) }
             }
         }
         return permissionGroups

@@ -1,5 +1,7 @@
 package ai.infrrd.permissionsplugin
 
+import android.graphics.drawable.Drawable
+
 class PermissionDescription(internal val permission:String,internal var description:String?) {
     constructor(permission: String) : this(permission,null)
     init {
@@ -14,3 +16,5 @@ class PermissionDescription(internal val permission:String,internal var descript
         }
     }
 }
+
+class PermissionGroup(val group:String,var description:String,var icon: Drawable?)

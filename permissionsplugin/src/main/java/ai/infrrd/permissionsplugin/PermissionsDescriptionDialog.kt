@@ -6,14 +6,15 @@ import android.app.Dialog
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatDialogFragment
-import android.view.LayoutInflater
-import android.view.View
 import android.widget.TextView
 import android.content.pm.PackageManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SimpleItemAnimator
 import ai.infrrd.permissionsplugin.R
+import android.util.Log
+import android.util.TypedValue
+import android.view.*
 
 
 internal class PermissionsDescriptionDialog: AppCompatDialogFragment() {
@@ -21,26 +22,29 @@ internal class PermissionsDescriptionDialog: AppCompatDialogFragment() {
 
     var positiveCallBack: () -> Unit = {}
     var negativeCallBack: () -> Unit = {}
-    lateinit var permissionDescription: List<PermissionDescription>
+    lateinit var permissionDescription: List<PermissionGroup>
     lateinit var titleString:String
     var packageManager: PackageManager? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: ExpandableRecycler
     private lateinit var viewManager: RecyclerView.LayoutManager
-
+    private var width:Int = 0
+    private var height:Int = 0
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         viewManager = LinearLayoutManager(context)
-        viewAdapter =
-                ExpandableRecycler(permissionDescription, context)
+        viewAdapter = ExpandableRecycler(permissionDescription, context)
 
 
         packageManager = context?.packageManager
         var builder: AlertDialog.Builder = AlertDialog.Builder(activity)
         var inflater: LayoutInflater = LayoutInflater.from(activity)
+
+
         var view: View = inflater.inflate(R.layout.permissions_description_dialog,null)
+
         recyclerView = view.findViewById<RecyclerView>(R.id.permissions_recycler).apply {
             setHasFixedSize(true)
 
@@ -49,7 +53,9 @@ internal class PermissionsDescriptionDialog: AppCompatDialogFragment() {
             adapter = viewAdapter
 
         }
+
         (recyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
+
 
 //
 //        for(permission in permissionDescription) {
@@ -117,6 +123,14 @@ internal class PermissionsDescriptionDialog: AppCompatDialogFragment() {
 //        }
         builder.setView(view)
 
+        view.measure(0,
+            0)
+
+        width=view.measuredWidth
+        height = view.measuredHeight
+
+        Log.d("Inside",""+width+","+height)
+
         builder.setPositiveButton("Enable") { DialogFragment, i ->
                 positiveCallBack()
         }
@@ -133,9 +147,6 @@ internal class PermissionsDescriptionDialog: AppCompatDialogFragment() {
 
         builder.setCustomTitle(titleText)
         val alert = builder.create()
-        alert?.window?.setLayout(5000,6000)
-        alert.show()
-
         return alert
     }
 

@@ -25,6 +25,11 @@ class MainActivity : AppCompatActivity(), PermissionCallBacks {
         permissions.add(PermissionDescription(Manifest.permission.READ_EXTERNAL_STORAGE, "Camera permission"))
         permissions.add(PermissionDescription(Manifest.permission.WRITE_EXTERNAL_STORAGE))
         permissions.add(PermissionDescription(Manifest.permission.CAMERA,"blah blah"))
+        permissions.add(PermissionDescription(Manifest.permission.ACCESS_WIFI_STATE,"blah blah"))
+        permissions.add(PermissionDescription(Manifest.permission.BLUETOOTH,"blah blah"))
+        permissions.add(PermissionDescription(Manifest.permission.RECORD_AUDIO,"blah blah"))
+        permissions.add(PermissionDescription(Manifest.permission.ACCESS_FINE_LOCATION,"blah blah"))
+
         permissionsPlugin =
                 PermissionsPlugin(this, this, this)
 
