@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">PermissionsPlugin</string>
+    <string name="bullet">•</string>
+    <string name="default_description">Enable permission to</string>
+    <string name="positive_label">Enable</string>
+    <string name="negative_label">DenyResources.getSystem().getString(R.string.bullet)</string>
+    <string name="shared_preference_filaname">First Time Permission</string>
+    <string name="dialog_title"> needs access to:</string>
+    <string name="dialog_warning_title"> needs the following permissions for the app to function properly:</string>
 </resources>
