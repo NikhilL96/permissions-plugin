@@ -3,44 +3,58 @@ package ai.infrrd.permissionsplugin
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatDialogFragment
-import android.view.LayoutInflater
-import android.view.View
 import android.widget.TextView
 import android.content.pm.PackageManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SimpleItemAnimator
-import ai.infrrd.permissionsplugin.R
+import android.view.*
 
 
-class PermissionsDescriptionDialog: AppCompatDialogFragment() {
+internal class PermissionsDescriptionDialog: AppCompatDialogFragment() {
 
     var positiveCallBack: () -> Unit = {}
     var negativeCallBack: () -> Unit = {}
-    lateinit var permissionDescription: MutableList<PermissionDescription>
+    lateinit var permissionDescription: List<PermissionGroup>
     lateinit var titleString:String
     var packageManager: PackageManager? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: ExpandableRecycler
     private lateinit var viewManager: RecyclerView.LayoutManager
+    private lateinit var contextForApp: Context
 
 
+    fun setContext(context: Context) {
+        contextForApp = context
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        onCreate(savedInstanceState)
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         viewManager = LinearLayoutManager(context)
-        viewAdapter =
-                ExpandableRecycler(permissionDescription, context)
-
+        viewAdapter = ExpandableRecycler(permissionDescription, context)
 
 
         packageManager = context?.packageManager
-        var builder: AlertDialog.Builder = AlertDialog.Builder(activity)
-        var inflater: LayoutInflater = LayoutInflater.from(activity)
-        var view: View = inflater.inflate(R.layout.permissions_description_dialog,null)
+        val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
+        val inflater: LayoutInflater = LayoutInflater.from(activity)
+
+
+        val view: View = inflater.inflate(R.layout.permissions_description_dialog,null)
+
         recyclerView = view.findViewById<RecyclerView>(R.id.permissions_recycler).apply {
             setHasFixedSize(true)
 
@@ -49,79 +63,19 @@ class PermissionsDescriptionDialog: AppCompatDialogFragment() {
             adapter = viewAdapter
 
         }
+        resources.getString(R.string.negative_label)
+
         (recyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 
-//
-//        for(permission in permissionDescription) {
-//            var permissionView:View = inflater.inflate(R.layout.permission_description,null)
-//            var permissionLayout:LinearLayout = view.findViewById(R.id.permission_layout)
-//            var textView = permissionView.findViewById<TextView>(R.id.permission_title)
-//            var startRotationAngle = 0f
-//            var endRotationAngle = 180f
-//            var dropDownExpanded = false
-//            textView.text = getPermissionGroup(permission.permission)
-//            if(permission.description==null) {
-//                permission.description = getDescription(permission.permission)
-//            }
-//            textView.bringToFront()
-//
-//            var textView1 = permissionView.findViewById<TextView>(R.id.permission_description)
-//            textView1.text = permission.description
-//            var arrow = permissionView.findViewById<ImageView>(R.id.arrow)
-//            var animatorArrow = ObjectAnimator.ofFloat(arrow, "rotation", startRotationAngle,endRotationAngle).apply {
-//                duration = 200
-//            }
-//
-////            var animatorDescription = ObjectAnimator.ofFloat(textView1, "translationY", 70f).apply {
-////                duration = 200
-////            }
-////
-////            animatorDescription.addListener(
-////                object : Animator.AnimatorListener {
-////                    override fun onAnimationRepeat(animation: Animator?) {
-////                    }
-////
-////                    override fun onAnimationCancel(animation: Animator?) {
-////                    }
-////
-////                    override fun onAnimationStart(animation: Animator?) {
-////                        if(!dropDownExpanded) {
-////                            textView1.visibility = View.VISIBLE
-////                        }
-////                    }
-////
-////                    override fun onAnimationEnd(animation: Animator?) {
-////                        if(!dropDownExpanded) {
-////                        }
-////                    }
-////
-////                })
-//
-//            arrow.setOnClickListener {
-//                if(!dropDownExpanded) {
-//                    textView1.visibility = View.VISIBLE
-//                    animatorArrow.start()
-//                }
-//                else {
-//                    textView1.visibility = View.GONE
-//                    animatorArrow.reverse()
-//                }
-//                dropDownExpanded=!dropDownExpanded
-//
-//            }
-//            val drawable = getPermissionDrawable(permission.permission)
-//            var image = permissionView.findViewById<ImageView>(R.id.permission_icon)
-//            image.setImageDrawable(drawable)
-//            permissionLayout.addView(permissionView)
-//
-//        }
         builder.setView(view)
 
-        builder.setPositiveButton("Enable") { DialogFragment, i ->
+        builder.setPositiveButton(context?.resources?.getString(R.string.positive_label)) { DialogFragment, i ->
                 positiveCallBack()
         }
 
-        builder.setNegativeButton("Deny") { DialogFragment, i ->
+        builder.setNegativeButton(
+            context?.resources?.getString(R.string.negative_label
+        )) { DialogFragment, i ->
             negativeCallBack()
         }
 
@@ -133,13 +87,8 @@ class PermissionsDescriptionDialog: AppCompatDialogFragment() {
 
         builder.setCustomTitle(titleText)
         val alert = builder.create()
-        alert?.window?.setLayout(5000,6000)
-        alert.show()
-
         return alert
     }
-
-
 }
 
 
