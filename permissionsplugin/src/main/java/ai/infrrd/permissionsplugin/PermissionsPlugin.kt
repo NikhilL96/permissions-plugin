@@ -176,6 +176,11 @@ class PermissionsPlugin(private val activity: Activity,private val context: Cont
                     setWarningDialog(permissionsDisabled)
 
                 }
+            else {
+                permissionCallBacks?.onPermissionGranted()
+
+
+            }
             } else {
                 Toast.makeText(context, "Invalid permissions", Toast.LENGTH_LONG).show()
             }
