@@ -22,17 +22,23 @@ class MainActivity : AppCompatActivity(), PermissionCallBacks {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        permissions.add(
-            PermissionDescription(
-                Manifest.permission.CAMERA,
-                "Camera permission"
-            )
-        )
+        Log.d("look here",baseContext.resources.getString(ai.infrrd.permissionsplugin.R.string.positive_label))
+
+        permissions.add(PermissionDescription(Manifest.permission.READ_EXTERNAL_STORAGE, "Camera permission"))
         permissions.add(PermissionDescription(Manifest.permission.WRITE_EXTERNAL_STORAGE))
+        permissions.add(PermissionDescription(Manifest.permission.CAMERA,"blah blah"))
+        permissions.add(PermissionDescription(Manifest.permission.ACCESS_WIFI_STATE,"blah blah"))
+        permissions.add(PermissionDescription(Manifest.permission.BLUETOOTH,"blah blah"))
+        permissions.add(PermissionDescription(Manifest.permission.RECORD_AUDIO,"blah blah"))
+        permissions.add(PermissionDescription(Manifest.permission.ACCESS_FINE_LOCATION,"blah blah"))
+
         permissionsPlugin =
-                PermissionsPlugin(this, this, permissions, this)
+                PermissionsPlugin(this, this, this)
+
         button.setOnClickListener {
-            permissionsPlugin.checkPermissions()
+
+            permissionsPlugin.checkPermissions(permissions)
+
         }
     }
 
