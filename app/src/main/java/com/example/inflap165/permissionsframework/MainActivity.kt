@@ -22,6 +22,8 @@ class MainActivity : AppCompatActivity(), PermissionCallBacks {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        Log.d("look here",baseContext.resources.getString(ai.infrrd.permissionsplugin.R.string.positive_label))
+
         permissions.add(PermissionDescription(Manifest.permission.READ_EXTERNAL_STORAGE, "Camera permission"))
         permissions.add(PermissionDescription(Manifest.permission.WRITE_EXTERNAL_STORAGE))
         permissions.add(PermissionDescription(Manifest.permission.CAMERA,"blah blah"))

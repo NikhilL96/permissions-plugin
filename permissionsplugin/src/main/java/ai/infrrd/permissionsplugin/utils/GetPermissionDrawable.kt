@@ -5,7 +5,7 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 
-fun getPermissionDrawable(context: Context?,permission:String): Drawable? {
+internal fun getPermissionDrawable(context: Context?,permission:String): Drawable? {
     var drawable: Drawable?
     val permissionInfo = context?.packageManager?.getPermissionInfo(permission, 0)
     val groupInfo = context?.packageManager?.getPermissionGroupInfo(permissionInfo?.group, 0)

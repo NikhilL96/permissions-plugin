@@ -20,12 +20,20 @@ import android.widget.Toast
 
 class PermissionsPlugin(private val activity: Activity,private val context: Context, private var permissionCallBacks: PermissionCallBacks?) {
 
-    private val PREFS_FILE_NAME = Resources.getSystem().getString(R.string.shared_preference_filaname)
+    private val PREFS_FILE_NAME = context.resources.getString(R.string.shared_preference_filaname)
     private lateinit var permissions: Array<String>
     private var permissionDisabled = false
     private var permissionDenied = false
     private var permissionsDisabled:MutableList<PermissionDescription> = mutableListOf()
     private var permissionsDenied:MutableList<PermissionDescription> = mutableListOf()
+    private var descriptionDialog = PermissionsDescriptionDialog()
+    private var warningDialog = PermissionsDescriptionDialog()
+
+    init {
+        warningDialog.setContext(context)
+        descriptionDialog.setContext(context)
+
+    }
 
 
     private fun initializePermissionsArray(permissionDescription: MutableList<PermissionDescription>){
@@ -57,9 +65,6 @@ class PermissionsPlugin(private val activity: Activity,private val context: Cont
         return permissionGroups
     }
 
-
-    private var descriptionDialog = PermissionsDescriptionDialog()
-    private var warningDialog = PermissionsDescriptionDialog()
 
     private fun firstTimeAskingPermission(permission: String) {
 
@@ -160,7 +165,7 @@ class PermissionsPlugin(private val activity: Activity,private val context: Cont
                 }
 
                 descriptionDialog.permissionDescription = groupPermissions(permissionsDenied)
-                descriptionDialog.titleString = getApplicationName(context) + Resources.getSystem().getString(R.string.dialog_title)
+                descriptionDialog.titleString = getApplicationName(context) + context.resources.getString(R.string.dialog_title)
 
                 descriptionDialog.show(
                     (activity as FragmentActivity).supportFragmentManager,
@@ -188,7 +193,7 @@ class PermissionsPlugin(private val activity: Activity,private val context: Cont
 
         }
         warningDialog.permissionDescription = groupPermissions(permissionsDisabled)
-        warningDialog.titleString = getApplicationName(context)+ Resources.getSystem().getString(R.string.dialog_warning_title)
+        warningDialog.titleString = getApplicationName(context)+ context.resources.getString(R.string.dialog_warning_title)
         warningDialog.show((activity as FragmentActivity).supportFragmentManager, "permissions description")
     }
 
@@ -200,7 +205,7 @@ class PermissionsPlugin(private val activity: Activity,private val context: Cont
         }
         return permissions
     }
-    
+
     private fun validatePermissions(permissions:Array<String>):Boolean {
 
         val manifestPermissions:List<String> = context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS).requestedPermissions.toList()
