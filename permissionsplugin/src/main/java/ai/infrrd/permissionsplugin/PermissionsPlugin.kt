@@ -1,9 +1,13 @@
 package ai.infrrd.permissionsplugin
 
+import ai.infrrd.permissionsplugin.utils.getApplicationName
+import ai.infrrd.permissionsplugin.utils.getPermissionDrawable
+import ai.infrrd.permissionsplugin.utils.getPermissionGroup
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.net.Uri
 import android.provider.Settings
 import android.support.v4.app.ActivityCompat
@@ -14,29 +18,57 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 
 
-class PermissionsPlugin(val activity: Activity, val context: Context, val permissionDescription: MutableList<PermissionDescription>,
-                        var permissionCallBacks: PermissionCallBacks?) {
+class PermissionsPlugin(private val activity: Activity,private val context: Context, private var permissionCallBacks: PermissionCallBacks?) {
 
-    private val PREFS_FILE_NAME = "First Time Permissions"
-    private var permissions: Array<String> = Array(permissionDescription.size){""}
+    private val PREFS_FILE_NAME = context.resources.getString(R.string.shared_preference_filaname)
+    private lateinit var permissions: Array<String>
     private var permissionDisabled = false
     private var permissionDenied = false
     private var permissionsDisabled:MutableList<PermissionDescription> = mutableListOf()
     private var permissionsDenied:MutableList<PermissionDescription> = mutableListOf()
-
-
-    init{
-        for((i, permission) in permissionDescription.withIndex()) {
-            permissions[i] = permission.permission
-        }
-    }
-
     private var descriptionDialog = PermissionsDescriptionDialog()
     private var warningDialog = PermissionsDescriptionDialog()
 
+    init {
+        warningDialog.setContext(context)
+        descriptionDialog.setContext(context)
+
+    }
+
+
+    private fun initializePermissionsArray(permissionDescription: MutableList<PermissionDescription>){
+        permissions = Array(permissionDescription.size){""}
+        for((i, permission) in permissionDescription.withIndex()) {
+            permissions[i] = permission.permission
+        }
+
+    }
+    private fun groupPermissions(permissionDescription:List<PermissionDescription>):List<PermissionGroup> {
+        val permissionGroups:MutableList<PermissionGroup> = mutableListOf()
+
+        for(permission in permissionDescription) {
+
+            var newPermission:PermissionGroup? = permission.description?.let {PermissionGroup(getPermissionGroup(context,permission.permission),it,
+                getPermissionDrawable(context,permission.permission))  }
+            var groupPresent = false
+            for(group in permissionGroups) {
+                if(getPermissionGroup(context,permission.permission) == group.group ){
+                    group.description = group.description+ "\n" + permission.description
+                    groupPresent = true
+                    break
+                }
+            }
+            if(!groupPresent) {
+                newPermission?.let { permissionGroups.add(newPermission) }
+            }
+        }
+        return permissionGroups
+    }
+
+
     private fun firstTimeAskingPermission(permission: String) {
 
-        var sharedPreference = context.getSharedPreferences(PREFS_FILE_NAME, AppCompatActivity.MODE_PRIVATE)
+        val sharedPreference = context.getSharedPreferences(PREFS_FILE_NAME, AppCompatActivity.MODE_PRIVATE)
         if (!sharedPreference.contains(permission)) {
             sharedPreference.edit().putBoolean(permission, true).apply()
         }
@@ -55,20 +87,32 @@ class PermissionsPlugin(val activity: Activity, val context: Context, val permis
     fun onRequestPermissionResult(requestCode:Int, permissions:Array<out String> , grantResults:IntArray) {
 
         var oneOrMoreDenied = false
+        var oneOrMoreDisabled = false
+        var permissionsDisabled: MutableList<String> = mutableListOf()
+        var permissionsDenied: MutableList<String> = mutableListOf()
+
         for((i,result) in grantResults.withIndex()) {
             if(result == PackageManager.PERMISSION_DENIED) {
-                oneOrMoreDenied = true
                 if(!ActivityCompat.shouldShowRequestPermissionRationale(activity, permissions[i])) {
-                    permissionCallBacks?.onPermissionDisabled(getPermissionString(permissionsDisabled))
-                    return
+                    oneOrMoreDisabled = true
+                    permissionsDisabled.add(permissions[i])
+                }
+                else {
+                    oneOrMoreDenied = true
+                    permissionsDenied.add(permissions[i])
+
                 }
             }
         }
         if(oneOrMoreDenied) {
-            permissionCallBacks?.onPermissionDenied(getPermissionString(permissionsDisabled))
-            return
+            permissionCallBacks?.onPermissionDenied(permissionsDenied)
         }
-        permissionCallBacks?.onPermissionGranted()
+        if(oneOrMoreDisabled) {
+            permissionCallBacks?.onPermissionDisabled(permissionsDisabled)
+        }
+        else if(!oneOrMoreDenied) {
+            permissionCallBacks?.onPermissionGranted()
+        }
     }
 
     private fun isFirstTimeAskingPermission(permission:String): Boolean{
@@ -77,33 +121,32 @@ class PermissionsPlugin(val activity: Activity, val context: Context, val permis
 
 
     private fun getPermission() {
+        for(permission in permissions) {
+            firstTimeAskingPermission(permission)
+        }
         ActivityCompat.requestPermissions(activity, permissions, 1)
     }
 
 
-    fun checkPermissions() {
+    fun checkPermissions(permissionDescription: MutableList<PermissionDescription>) {
+        initializePermissionsArray(permissionDescription)
         permissionDisabled = false
-        permissionDenied =false
+        permissionDenied = false
         permissionsDenied.clear()
         permissionsDisabled.clear()
 
-        if(validatePermissions(getPermissionString(permissionDescription))) {
+        if (validatePermissions(permissions)) {
 
-            for (permission in permissionDescription) {
-                firstTimeAskingPermission(permission.permission)
-                if (ContextCompat.checkSelfPermission(
-                        context,
-                        permission.permission
-                    ) == PackageManager.PERMISSION_GRANTED
+            for ((i, permission) in permissions.withIndex()) {
+                if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+                    removePreference(permission)
+                } else if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)
+                    && !isFirstTimeAskingPermission(permission)
                 ) {
-                    removePreference(permission.permission)
-                } else if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, permission.permission)
-                    && !isFirstTimeAskingPermission(permission.permission)
-                ) {
-                    permissionsDisabled.add(permission)
+                    permissionsDisabled.add(permissionDescription[i])
                     permissionDisabled = true
                 } else {
-                    permissionsDenied.add(permission)
+                    permissionsDenied.add(permissionDescription[i])
                     permissionDenied = true
                 }
             }
@@ -111,55 +154,66 @@ class PermissionsPlugin(val activity: Activity, val context: Context, val permis
             if (permissionDenied) {
                 descriptionDialog.positiveCallBack = {
                     getPermission()
+                    if (permissionDisabled) {
+                        setWarningDialog(permissionsDisabled)
+                    }
                 }
 
                 descriptionDialog.negativeCallBack = {
+                    permissionCallBacks?.onPermissionDenied(getPermissionString(permissionsDenied))
 
                 }
 
-                descriptionDialog.permissionDescription = permissionsDenied
-                descriptionDialog.titleString = getApplicationName() +" needs Access to:"
+                descriptionDialog.permissionDescription = groupPermissions(permissionsDenied)
+                descriptionDialog.titleString = getApplicationName(context) + context.resources.getString(R.string.dialog_title)
 
-                descriptionDialog.show((activity as FragmentActivity).supportFragmentManager, "permissions description")
+                descriptionDialog.show(
+                    (activity as FragmentActivity).supportFragmentManager,
+                    "permissions description"
+                )
             }
-
-
-            if (permissionDisabled) {
-                warningDialog.positiveCallBack = {
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                    val uri = Uri.fromParts("package", activity.packageName, null)
-                    intent.data = uri
-                    startActivity(context, intent, null)
-                }
-                warningDialog.negativeCallBack = {
+            else if (permissionDisabled) {
+                    setWarningDialog(permissionsDisabled)
 
                 }
-                warningDialog.permissionDescription = permissionsDisabled
-                warningDialog.titleString = getApplicationName()+ " needs the following permissions for the app to function properly:"
-                warningDialog.show((activity as FragmentActivity).supportFragmentManager, "permissions description")
+            else {
+                permissionCallBacks?.onPermissionGranted()
+
 
             }
-        }
-        else {
-            Toast.makeText(context," Invalid permissions",Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(context, "Invalid permissions", Toast.LENGTH_LONG).show()
+            }
         }
 
+    private fun setWarningDialog(permissionDisabled: MutableList<PermissionDescription>) {
+        warningDialog.positiveCallBack = {
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            val uri = Uri.fromParts("package", activity.packageName, null)
+            intent.data = uri
+            startActivity(context, intent, null)
+        }
+        warningDialog.negativeCallBack = {
+            permissionCallBacks?.onPermissionDisabled(getPermissionString(permissionDisabled))
+
+        }
+        warningDialog.permissionDescription = groupPermissions(permissionsDisabled)
+        warningDialog.titleString = getApplicationName(context)+ context.resources.getString(R.string.dialog_warning_title)
+        warningDialog.show((activity as FragmentActivity).supportFragmentManager, "permissions description")
     }
 
-    private fun getApplicationName():String {
-        return context?.packageManager?.getApplicationLabel(context?.packageManager?.getApplicationInfo(context.packageName,0)).toString()
-    }
 
-    fun getPermissionString(permissionDescriptions: MutableList<PermissionDescription>): List<String> {
-        var permissions = mutableListOf<String>()
+    private fun getPermissionString(permissionDescriptions: MutableList<PermissionDescription>): List<String> {
+        val permissions = mutableListOf<String>()
         for(permissionDescription in permissionDescriptions) {
             permissions.add(permissionDescription.permission)
         }
         return permissions
     }
-    fun validatePermissions(permissions:List<String>):Boolean {
 
-        var manifestPermissions:List<String> = context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS).requestedPermissions.toList()
+    private fun validatePermissions(permissions:Array<String>):Boolean {
+
+        val manifestPermissions:List<String> = context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS).requestedPermissions.toList()
         for(permission in permissions) {
             if(!manifestPermissions.contains(permission)) {
                 return false
@@ -168,8 +222,6 @@ class PermissionsPlugin(val activity: Activity, val context: Context, val permis
         return true
     }
 }
-
-
 
 
 
