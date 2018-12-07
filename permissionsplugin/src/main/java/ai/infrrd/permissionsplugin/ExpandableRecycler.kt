@@ -13,9 +13,8 @@ import ai.infrrd.permissionsplugin.utils.getPermissionDrawable
 import ai.infrrd.permissionsplugin.utils.getPermissionGroup
 
 internal class ExpandableRecycler(private val permissions: List<PermissionGroup>, val context: Context?) :
-
     RecyclerView.Adapter<ExpandableRecycler.MyViewHolder>() {
-    var isExpanded = Array<Boolean>(permissions.size){_ -> false}
+    var isExpanded = Array<Boolean>(permissions.size){ false}
     class MyViewHolder(val linearLayout: CardView) : RecyclerView.ViewHolder(linearLayout)
 
     override fun onCreateViewHolder(parent: ViewGroup,

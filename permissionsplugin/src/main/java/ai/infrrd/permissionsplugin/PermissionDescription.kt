@@ -1,7 +1,7 @@
 package ai.infrrd.permissionsplugin
 
-import android.content.res.Resources
 import android.graphics.drawable.Drawable
+import android.util.Log
 
 class PermissionDescription(internal val permission:String,internal var description:String?) {
 
@@ -12,7 +12,6 @@ class PermissionDescription(internal val permission:String,internal var descript
     }
 
     private fun setDescription() {
-
         description?.let { description = "\u2022$it" } ?:
         run{ description = "\u2022"+
                 "Enable permission to " +

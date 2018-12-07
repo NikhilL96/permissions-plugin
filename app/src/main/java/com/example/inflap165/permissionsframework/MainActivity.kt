@@ -8,12 +8,14 @@ import android.util.Log
 import ai.infrrd.permissionsplugin.PermissionCallBacks
 import ai.infrrd.permissionsplugin.PermissionDescription
 import ai.infrrd.permissionsplugin.PermissionsPlugin
+import android.content.Intent
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), PermissionCallBacks {
 
     companion object {
-        private val TAG = MainActivity::class.qualifiedName
+        private val TAG = "asdasd"
     }
 
     val permissions = mutableListOf<PermissionDescription>()
@@ -32,14 +34,12 @@ class MainActivity : AppCompatActivity(), PermissionCallBacks {
         permissions.add(PermissionDescription(Manifest.permission.RECORD_AUDIO,"blah blah"))
         permissions.add(PermissionDescription(Manifest.permission.ACCESS_FINE_LOCATION,"blah blah"))
 
-        permissionsPlugin =
-                PermissionsPlugin(this, this, this)
+        permissionsPlugin = PermissionsPlugin(this, this)
 
         button.setOnClickListener {
-
             permissionsPlugin.checkPermissions(permissions)
-
         }
+
     }
 
     override fun onRequestPermissionsResult(
@@ -50,15 +50,29 @@ class MainActivity : AppCompatActivity(), PermissionCallBacks {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
+    override  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        if(requestCode == PermissionsPlugin.requestCode) {
+            permissionsPlugin.activityResultCallback()
+        }
+
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+
     override fun onPermissionDenied(deniedPermissions:List<String>) {
+        Toast.makeText(baseContext,"Denied$deniedPermissions",Toast.LENGTH_SHORT).show()
         Log.d(TAG, (deniedPermissions).toString())
     }
 
     override fun onPermissionDisabled(disabledPermissions:List<String>) {
+        Toast.makeText(baseContext,"Disabled$disabledPermissions",Toast.LENGTH_SHORT).show()
         Log.d(TAG,disabledPermissions.toString())
     }
 
     override fun onPermissionGranted() {
+        Toast.makeText(baseContext,"Granted",Toast.LENGTH_SHORT).show()
+
         Log.d(TAG,"Permissions Granted")
     }
 }
