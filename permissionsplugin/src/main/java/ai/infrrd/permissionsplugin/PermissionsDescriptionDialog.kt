@@ -13,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SimpleItemAnimator
 import android.view.*
+import android.widget.Button
 import kotlinx.android.synthetic.main.permissions_description_dialog.*
 
 
@@ -64,17 +65,16 @@ internal class PermissionsDescriptionDialog: AppCompatDialogFragment() {
             adapter = viewAdapter
 
         }
-        resources.getString(R.string.negative_label)
 
         (recyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 
         builder.setView(view)
 
-        enable_button.setOnClickListener {
+        view.findViewById<Button>(R.id.enable_button).setOnClickListener {
             positiveCallBack
         }
 
-        deny_button.setOnClickListener {
+        view.findViewById<Button>(R.id.deny_button).setOnClickListener {
             negativeCallBack
         }
 

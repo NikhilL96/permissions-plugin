@@ -22,7 +22,6 @@
                 android:text="@string/deny"
                 android:id="@+id/deny_button"
                 android:background="@null"
-                android:fontFamily="@font/font_regular"
                 android:textColor="#0B68FB"/>
         <Button
                 android:layout_width="wrap_content"
@@ -30,7 +29,6 @@
                 android:text="@string/allow"
                 android:id="@+id/enable_button"
                 android:background="@null"
-                android:fontFamily="@font/font_regular"
                 android:textColor="#0B68FB"/>
     </LinearLayout>
 
