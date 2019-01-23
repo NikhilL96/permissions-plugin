@@ -13,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SimpleItemAnimator
 import android.view.*
+import kotlinx.android.synthetic.main.permissions_description_dialog.*
 
 
 internal class PermissionsDescriptionDialog: AppCompatDialogFragment() {
@@ -69,14 +70,12 @@ internal class PermissionsDescriptionDialog: AppCompatDialogFragment() {
 
         builder.setView(view)
 
-        builder.setPositiveButton(context?.resources?.getString(R.string.positive_label)) { DialogFragment, i ->
-                positiveCallBack()
+        enable_button.setOnClickListener {
+            positiveCallBack
         }
 
-        builder.setNegativeButton(
-            context?.resources?.getString(R.string.negative_label
-        )) { DialogFragment, i ->
-            negativeCallBack()
+        deny_button.setOnClickListener {
+            negativeCallBack
         }
 
         var titleText = TextView(context)
