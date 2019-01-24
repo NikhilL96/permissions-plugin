@@ -21,23 +21,22 @@
                 android:layout_height="wrap_content"
                 android:text="@string/deny"
                 android:id="@+id/deny_button"
-                android:background="@null"
+                android:background="?attr/selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
                 android:textColor="#0B68FB"
-                android:paddingBottom="20dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
+                android:padding="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
         />
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/allow"
+                android:background="?attr/selectableItemBackground"
                 android:id="@+id/enable_button"
-                android:background="@null"
-                android:paddingRight="20dp"
-                android:paddingBottom="20dp"
-                android:paddingLeft="10dp"
+                android:padding="10dp"
+                android:layout_margin="10dp"
                 android:textColor="#0B68FB"/>
     </LinearLayout>
 
