@@ -191,7 +191,7 @@ open class PermissionsPlugin(private val activity: Activity, private var permiss
             permissionCallBacks?.onPermissionDenied(getPermissionString(permissionsDenied))
         }
         descriptionDialog.permissionDescription = groupPermissions(permissionsDenied)
-        descriptionDialog.titleString = getApplicationName(context) + context.resources.getString(R.string.dialog_title)
+        descriptionDialog.titleString = getApplicationName(context) + " " + context.resources.getString(R.string.dialog_title)
 
         descriptionDialog.show(
             (activity as FragmentActivity).supportFragmentManager,
@@ -215,7 +215,7 @@ open class PermissionsPlugin(private val activity: Activity, private var permiss
             }
         }
         warningDialog.permissionDescription = groupPermissions(permissionDisabled)
-        warningDialog.titleString = getApplicationName(context)+ context.resources.getString(R.string.dialog_warning_title)
+        warningDialog.titleString = getApplicationName(context)+ " " + context.resources.getString(R.string.dialog_warning_title)
         warningDialog.show((activity as FragmentActivity).supportFragmentManager, "permissions description")
     }
 

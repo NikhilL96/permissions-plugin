@@ -16,19 +16,31 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/permissions_recycler"
             app:layout_constraintEnd_toEndOf="parent">
-        <Button
+        <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/deny"
                 android:id="@+id/deny_button"
-                android:background="@null"
-                android:textColor="#0B68FB"/>
-        <Button
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:textColor="#0B68FB"
+                android:padding="10dp"
+                android:textStyle="bold"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+        />
+        <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/allow"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
                 android:id="@+id/enable_button"
-                android:background="@null"
+                android:padding="10dp"
+                android:textStyle="bold"
+                android:layout_margin="10dp"
                 android:textColor="#0B68FB"/>
     </LinearLayout>
 
