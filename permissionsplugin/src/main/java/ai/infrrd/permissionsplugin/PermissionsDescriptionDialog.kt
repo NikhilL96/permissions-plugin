@@ -70,12 +70,12 @@ internal class PermissionsDescriptionDialog: AppCompatDialogFragment() {
 
         builder.setView(view)
 
-        view.findViewById<Button>(R.id.enable_button).setOnClickListener {
-            positiveCallBack
+        view.findViewById<TextView>(R.id.enable_button).setOnClickListener {
+            positiveCallBack.invoke()
         }
 
-        view.findViewById<Button>(R.id.deny_button).setOnClickListener {
-            negativeCallBack
+        view.findViewById<TextView>(R.id.deny_button).setOnClickListener {
+            negativeCallBack.invoke()
         }
 
         var titleText = TextView(context)
