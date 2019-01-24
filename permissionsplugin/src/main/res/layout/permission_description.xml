@@ -20,15 +20,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/permission_icon"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"/>
+                android:layout_marginEnd="10dp"/>
 
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:orientation="vertical">
 
-            <android.support.constraint.ConstraintLayout
+            <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <TextView
@@ -37,20 +37,18 @@
                         android:id="@+id/permission_title"
                         android:textSize="17sp"
                         android:layout_marginStart="5dp"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_alignParentStart="true"
                         android:layout_marginLeft="5dp"/>
                 <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/arrow"
                         android:src="@drawable/expand"
-                        app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginLeft="10dp"/>
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginStart="10dp"/>
 
-            </android.support.constraint.ConstraintLayout>
+            </RelativeLayout>
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

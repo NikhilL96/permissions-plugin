@@ -26,6 +26,7 @@
                 android:focusable="true"
                 android:textColor="#0B68FB"
                 android:padding="10dp"
+                android:textStyle="bold"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
         />
@@ -34,8 +35,11 @@
                 android:layout_height="wrap_content"
                 android:text="@string/allow"
                 android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
                 android:id="@+id/enable_button"
                 android:padding="10dp"
+                android:textStyle="bold"
                 android:layout_margin="10dp"
                 android:textColor="#0B68FB"/>
     </LinearLayout>
