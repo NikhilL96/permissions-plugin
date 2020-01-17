@@ -38,7 +38,7 @@
                         android:textSize="17sp"
                         android:layout_marginStart="5dp"
                         android:layout_alignParentStart="true"
-                        android:layout_marginLeft="5dp"/>
+                        android:layout_toStartOf="@id/arrow"/>
                 <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

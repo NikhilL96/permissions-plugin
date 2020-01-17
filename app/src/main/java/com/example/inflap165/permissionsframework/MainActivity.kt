@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity(), PermissionCallBacks {
         setContentView(R.layout.activity_main)
         Log.d("look here",baseContext.resources.getString(ai.infrrd.permissionsplugin.R.string.positive_label))
 
-//        supportFragmentManager.beginTransaction().replace(R.id.fragment_frame_layout, PermissionsFragment.newInstance()).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_frame_layout, PermissionsFragment.newInstance()).commit()
 //
 //        permissions.add(PermissionDescription(Manifest.permission.READ_EXTERNAL_STORAGE, "Camera permission"))
 //        permissions.add(PermissionDescription(Manifest.permission.WRITE_EXTERNAL_STORAGE))

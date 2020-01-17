@@ -3,9 +3,10 @@ package ai.infrrd.permissionsplugin
 import android.graphics.drawable.Drawable
 import android.util.Log
 
-class PermissionDescription(internal val permission:String,internal var description:String?) {
+//For Android 10 and above, please pass the permissionGroup parameter
+class PermissionDescription(internal val permission:String,internal var description:String?,internal var permissionGroup: String? = null) {
 
-    constructor(permission: String) : this(permission,null)
+    constructor(permission: String) : this(permission,null, null)
 
     init {
         setDescription()

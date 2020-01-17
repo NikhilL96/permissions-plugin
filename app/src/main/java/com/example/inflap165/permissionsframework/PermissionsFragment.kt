@@ -36,19 +36,18 @@ private const val ARG_PARAM2 = "param2"
 class PermissionsFragment : Fragment(), PermissionCallBacks {
 
     private val permissions = mutableListOf<PermissionDescription>()
-    lateinit var permissionsPlugin: PermissionsPlugin
+    private lateinit var permissionsPlugin: PermissionsPlugin
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d("look here",context?.resources?.getString(ai.infrrd.permissionsplugin.R.string.positive_label))
 
-        permissions.add(PermissionDescription(Manifest.permission.READ_EXTERNAL_STORAGE, "Camera permission"))
-        permissions.add(PermissionDescription(Manifest.permission.WRITE_EXTERNAL_STORAGE))
-        permissions.add(PermissionDescription(Manifest.permission.CAMERA,"blah blah"))
-        permissions.add(PermissionDescription(Manifest.permission.ACCESS_WIFI_STATE,"blah blah"))
-        permissions.add(PermissionDescription(Manifest.permission.BLUETOOTH,"blah blah"))
-        permissions.add(PermissionDescription(Manifest.permission.RECORD_AUDIO,"blah blah"))
-        permissions.add(PermissionDescription(Manifest.permission.ACCESS_FINE_LOCATION,"blah blah"))
+        permissions.add(PermissionDescription(Manifest.permission.READ_EXTERNAL_STORAGE, "Camera permission", Manifest.permission_group.STORAGE))
+        permissions.add(PermissionDescription(Manifest.permission.WRITE_EXTERNAL_STORAGE,"blah blah", Manifest.permission_group.STORAGE))
+        permissions.add(PermissionDescription(Manifest.permission.CAMERA,"blah blah", Manifest.permission_group.CAMERA))
+        permissions.add(PermissionDescription(Manifest.permission.ANSWER_PHONE_CALLS,"blah blah", Manifest.permission_group.STORAGE))
+        permissions.add(PermissionDescription(Manifest.permission.RECORD_AUDIO,"blah blah", Manifest.permission_group.MICROPHONE))
+        permissions.add(PermissionDescription(Manifest.permission.ACCESS_FINE_LOCATION,"blah blah", Manifest.permission_group.LOCATION))
 
         permissionsPlugin = PermissionsPlugin(this, this)
 

@@ -79,13 +79,13 @@ class PermissionsPlugin(
 
             val newPermission: PermissionGroup? = permission.description?.let {
                 PermissionGroup(
-                    getPermissionGroup(context, permission.permission), it,
-                    getPermissionDrawable(context, permission.permission)
+                    getPermissionGroup(context, permission.permission, permission.permissionGroup), it,
+                    getPermissionDrawable(context, permission.permission, permission.permissionGroup)
                 )
             }
             var groupPresent = false
             for (group in permissionGroups) {
-                if (getPermissionGroup(context, permission.permission) == group.group) {
+                if (getPermissionGroup(context, permission.permission, permission.permissionGroup) == group.group) {
                     group.description = group.description + "\n" + permission.description
                     groupPresent = true
                     break
